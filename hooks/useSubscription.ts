@@ -47,9 +47,11 @@ export const useSubscription = (token?: string) => {
     return subscription?.features[featureName] === true;
   };
 
-  const invoicesRemaining = subscription?.usage.remaining ?? 0;
-  const isApproachingLimit = !subscription?.usage.unlimited && 
-    subscription?.usage.used >= (subscription?.usage.limit * 0.8);
+  const invoicesRemaining = subscription?.usage?.remaining ?? 0;
+  const isApproachingLimit = !subscription?.usage?.unlimited && 
+    subscription?.usage?.used !== undefined &&
+    subscription?.usage?.limit !== undefined &&
+    subscription.usage.used >= (subscription.usage.limit * 0.8);
 
   return {
     subscription,
