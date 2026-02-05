@@ -6,7 +6,8 @@ import { apiRequest } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { DashboardNav } from '@/components/DashboardNav';
 import { Button } from '@/components/ui/button';
-import { Progress } from "../../../components/ui/progress"
+import { Progress } from "../../../components/ui/progress";
+import { SubscriptionCard } from '@/components/SubscriptionCard';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -15,8 +16,6 @@ export default function DashboardPage() {
         totalUnpaid: 0,
         overdueAmount: 0,
         paidThisMonth: 0,
-        invoiceUsage: 0, // Mock usage
-        plan: 'free' // Mock Plan
     });
     const [loading, setLoading] = useState(true);
 
@@ -30,13 +29,7 @@ export default function DashboardPage() {
                 }
 
                 const data = await apiRequest('/invoice-reminder/stats', { token });
-                // We mock the plan/usage data here since the stats API doesn't return it yet.
-                // In a real scenario, the API would return { ...stats, plan: 'free', invoiceUsage: 3 }
-                setStats({
-                    ...data.data,
-                    plan: 'free',
-                    invoiceUsage: data.data.invoiceCount || 3 // Fallback mock
-                });
+                setStats(data.data);
             } catch (err) {
                 console.error('Failed to fetch stats', err);
             } finally {
@@ -60,31 +53,14 @@ export default function DashboardPage() {
                         </Link>
                     </div>
 
-                    {/* Subscription Status Widget */}
-                    <div className="mb-8">
-                        <Card className="bg-gradient-to-r from-indigo-50 to-white border-indigo-100">
-                            <CardContent className="pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                                <div>
-                                    <h3 className="font-semibold text-lg text-indigo-900">Current Plan: <span className="uppercase font-bold">{stats.plan}</span></h3>
-                                    <p className="text-sm text-indigo-700">You have used {stats.invoiceUsage} of 5 free invoices this month.</p>
-                                    <div className="w-[200px] mt-2">
-                                        <Progress value={(stats.invoiceUsage / 5) * 100} className="h-2" />
-                                    </div>
-                                </div>
-                                <div>
-                                    {stats.plan === 'free' && (
-                                        <Link href="/pricing">
-                                            <Button className="bg-black hover:bg-gray-800 text-white">
-                                                Upgrade to Pro
-                                            </Button>
-                                        </Link>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        {/* Subscription Card - Takes full width on mobile, 1 col on desktop */}
+                        <div className="lg:col-span-1">
+                            <SubscriptionCard />
+                        </div>
 
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+                        {/* Stats Cards - Takes 2 cols on desktop */}
+                        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-5">
                         <Card>
                             <CardHeader className="pb-2">
                                 <CardTitle className="text-sm font-medium text-gray-500">
@@ -130,6 +106,7 @@ export default function DashboardPage() {
                                 </p>
                             </CardContent>
                         </Card>
+                        </div>
                     </div>
                 </div>
             </div>

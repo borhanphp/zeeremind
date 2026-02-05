@@ -1,45 +1,139 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Loader2 } from 'lucide-react';
-import { DashboardNav } from '@/components/DashboardNav';
-import { apiRequest } from '@/lib/api';
+import { Check, Loader2, AlertCircle, Sparkles } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useSubscription } from '@/hooks/useSubscription';
+import { createCheckout } from '@/lib/subscription';
+import Script from 'next/script';
 
 export default function PricingPage() {
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    
+    // Get auth token from localStorage (adjust based on your auth implementation)
+    const [token, setToken] = useState<string | null>(null);
+    
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setToken(localStorage.getItem('token'));
+        }
+    }, []);
 
-    // This would typically come from your API/AuthContext
-    // For now we assume we can fetch it or pass it.
-    // Ideally, useAuth() hook provides this.
-    // const { user } = useAuth(); 
-    // MOCK USER for display (replace with actual auth logic)
-    const user = { plan: 'free' };
+    const { subscription, loading: subLoading, isTrial, isPro } = useSubscription(token || undefined);
+    const [paddleLoaded, setPaddleLoaded] = useState(false);
 
     const handleUpgrade = async () => {
+        if (!token) {
+            setError('Please log in to upgrade');
+            return;
+        }
+
         setLoading(true);
+        setError(null);
+        
         try {
-            // In a real implementation:
-            // 1. Initialize Paddle.js
-            // 2. Open Checkout with items based on plan
+            // Get checkout data from backend
+            const response = await createCheckout(token, 'pro');
+            
+            // Initialize Paddle.js if not already loaded
+            if (!(window as any).Paddle) {
+                setError('Payment system is loading. Please try again.');
+                setLoading(false);
+                return;
+            }
 
-            // Simulating a delay for now as we don't have Paddle keys enabled yet
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            alert("Paddle Checkout would open here!\n\nOnce paid, the webhook updates your account.");
+            // Open Paddle checkout
+            (window as any).Paddle.Checkout.open({
+                items: [{
+                    priceId: response.priceId,
+                    quantity: 1
+                }],
+                customData: response.customData,
+                customer: {
+                    email: response.customerEmail
+                },
+                settings: {
+                    successUrl: `${window.location.origin}/dashboard?upgrade=success`,
+                    allowLogout: false
+                }
+            });
 
-        } catch (error) {
-            console.error('Checkout failed:', error);
-            alert('Failed to start checkout');
-        } finally {
+            setLoading(false);
+        } catch (err: any) {
+            console.error('Checkout failed:', err);
+            setError(err.message || 'Failed to start checkout. Please try again.');
             setLoading(false);
         }
     };
 
+    if (subLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            </div>
+        );
+    }
+
     return (
+        <>
+            {/* Load Paddle.js */}
+            <Script
+                src="https://cdn.paddle.com/paddle/v2/paddle.js"
+                onLoad={() => {
+                    if ((window as any).Paddle) {
+                        // Initialize Paddle with client-side token
+                        const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+                        
+                        if (!clientToken) {
+                            console.error('[Paddle] Client token not configured');
+                            setError('Payment system not configured. Please contact support.');
+                            return;
+                        }
+
+                        try {
+                            (window as any).Paddle.Initialize({
+                                token: clientToken,
+                                eventCallback: (event: any) => {
+                                    console.log('[Paddle] Event:', event);
+                                    if (event.name === 'checkout.completed') {
+                                        window.location.href = '/dashboard?upgrade=success';
+                                    }
+                                }
+                            });
+                            setPaddleLoaded(true);
+                            console.log('[Paddle] Initialized successfully in sandbox mode');
+                        } catch (err) {
+                            console.error('[Paddle] Initialization error:', err);
+                            setError('Failed to initialize payment system');
+                        }
+                    }
+                }}
+            />
         <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
             <div className="max-w-5xl mx-auto pt-16 px-4 pb-12">
+                {/* Trial Banner */}
+                {isTrial && subscription?.trial && (
+                    <Alert className="mb-8 border-blue-200 bg-blue-50">
+                        <Sparkles className="h-4 w-4 text-blue-600" />
+                        <AlertDescription className="text-blue-900">
+                            <strong>Trial Active!</strong> You have {subscription.trial.daysRemaining} days remaining in your free trial. 
+                            Upgrade anytime to keep all Pro features.
+                        </AlertDescription>
+                    </Alert>
+                )}
+
+                {/* Error Alert */}
+                {error && (
+                    <Alert className="mb-8 border-red-200 bg-red-50">
+                        <AlertCircle className="h-4 w-4 text-red-600" />
+                        <AlertDescription className="text-red-900">{error}</AlertDescription>
+                    </Alert>
+                )}
+
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
                         Simple, Transparent Pricing
@@ -71,18 +165,30 @@ export default function PricingPage() {
                             </ul>
                         </CardContent>
                         <CardFooter>
-                            <Button className="w-full" variant="outline" disabled>
-                                Current Plan
-                            </Button>
+                            {subscription?.plan === 'free' && !isTrial ? (
+                                <Button className="w-full" variant="outline" disabled>
+                                    Current Plan
+                                </Button>
+                            ) : isTrial ? (
+                                <Badge variant="secondary" className="w-full py-2 justify-center">
+                                    Trial Active
+                                </Badge>
+                            ) : (
+                                <Button className="w-full" variant="outline" disabled>
+                                    Free Plan
+                                </Button>
+                            )}
                         </CardFooter>
                     </Card>
 
                     {/* Pro Plan */}
-                    <Card className={`flex flex-col border-2 ${user.plan === 'pro' ? 'border-indigo-600' : 'border-indigo-100'} shadow-lg relative overflow-hidden`}>
+                    <Card className={`flex flex-col border-2 ${isPro ? 'border-indigo-600' : 'border-indigo-100'} shadow-lg relative overflow-hidden`}>
                         {/* Most Popular Badge */}
-                        <div className="absolute top-0 right-0 bg-black text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                            POPULAR
-                        </div>
+                        {!isPro && (
+                            <div className="absolute top-0 right-0 bg-black text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                                POPULAR
+                            </div>
+                        )}
                         <CardHeader>
                             <CardTitle className="text-2xl text-black">Pro</CardTitle>
                             <CardDescription>For growing businesses needing more.</CardDescription>
@@ -105,13 +211,31 @@ export default function PricingPage() {
                             </ul>
                         </CardContent>
                         <CardFooter>
-                            {user.plan === 'pro' ? (
-                                <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
-                                    Active
-                                </Button>
+                            {isPro ? (
+                                <div className="w-full space-y-2">
+                                    <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
+                                        ✓ Active Subscription
+                                    </Button>
+                                    {subscription?.billing?.cancelAtPeriodEnd && (
+                                        <p className="text-xs text-center text-muted-foreground">
+                                            Cancels on {new Date(subscription.billing.currentPeriodEnd).toLocaleDateString()}
+                                        </p>
+                                    )}
+                                </div>
                             ) : (
-                                <Button className="w-full bg-black hover:bg-gray-800 text-white" onClick={handleUpgrade} disabled={loading}>
-                                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Upgrade to Pro'}
+                                <Button 
+                                    className="w-full bg-black hover:bg-gray-800 text-white" 
+                                    onClick={handleUpgrade} 
+                                    disabled={loading}
+                                >
+                                    {loading ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Opening checkout...
+                                        </>
+                                    ) : (
+                                        'Upgrade to Pro'
+                                    )}
                                 </Button>
                             )}
                         </CardFooter>
@@ -119,5 +243,6 @@ export default function PricingPage() {
                 </div>
             </div>
         </div>
+        </>
     );
 }
