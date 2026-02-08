@@ -33,10 +33,10 @@ export function DashboardNav() {
                         Invoices
                     </Link>
                     <Link
-                        href="/dashboard/profile"
+                        href="/dashboard/settings"
                         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
                     >
-                        Profile
+                        Settings
                     </Link>
                 </nav>
                 <div className="ml-auto flex items-center space-x-4">

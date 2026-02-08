@@ -179,8 +179,8 @@ export function SubscriptionCard() {
 
       <CardFooter>
         {!isPro ? (
-          <Link href="/pricing" className="w-full">
-            <Button className="w-full">
+          <Link href="/upgrade" className="w-full">
+            <Button className="w-full bg-black text-white hover:bg-gray-800">
               <Crown className="mr-2 h-4 w-4" />
               Upgrade to Pro
             </Button>

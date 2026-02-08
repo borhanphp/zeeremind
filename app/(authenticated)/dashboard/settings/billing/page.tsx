@@ -194,11 +194,8 @@ export default function BillingPage() {
 
             <div className="flex flex-wrap gap-3">
               {!isPro ? (
-                <Link href="/pricing">
-                  <Button>
-                    <Crown className="mr-2 h-4 w-4" />
-                    Upgrade to Pro
-                  </Button>
+                <Link href="/upgrade">
+                  <Button variant="outline">View Plans</Button>
                 </Link>
               ) : (
                 <>

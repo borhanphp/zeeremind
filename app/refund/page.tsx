@@ -19,29 +19,26 @@ export default function RefundPolicy() {
                     <p className="text-sm text-gray-500">Last updated: {new Date().toLocaleDateString()}</p>
 
                     <div className="prose dark:prose-invert max-w-none space-y-4">
-                        <h2 className="text-xl font-semibold">1. Subscription Refunds</h2>
+                        <h2 className="text-xl font-semibold">1. Right of Withdrawal</h2>
                         <p>
-                            ZeeRemind offers a 14-day money-back guarantee for all new subscriptions. If you are not satisfied with our service for any reason, you may request a full refund within 14 days of your initial purchase.
+                            You have the right to withdraw from your subscription contract within 14 days without giving any reason. The withdrawal period will expire after 14 days from the day of the conclusion of the contract.
                         </p>
 
-                        <h2 className="text-xl font-semibold">2. Recurring Charges</h2>
+                        <h2 className="text-xl font-semibold">2. How to Exercise Your Right</h2>
                         <p>
-                            For recurring subscription charges, we do not provide refunds for partial months or years. If you cancel your subscription, you will continue to have access to the service until the end of your current billing period.
+                            To exercise the right of withdrawal, you must inform us of your decision to withdraw from this contract by an unequivocal statement (e.g., a letter sent by post or email). You may use the attached model withdrawal form, but it is not obligatory.
+                        </p>
+                        <p>
+                            To meet the withdrawal deadline, it is sufficient for you to send your communication concerning your exercise of the right of withdrawal before the withdrawal period has expired.
+                            Please contact us at support@zeeremind.com.
                         </p>
 
-                        <h2 className="text-xl font-semibold">3. Exceptions</h2>
+                        <h2 className="text-xl font-semibold">3. Effects of Withdrawal</h2>
                         <p>
-                            We reserve the right to refuse a refund if we believe there has been abuse of our refund policy or a violation of our Terms of Service.
+                            If you withdraw from this contract, we shall reimburse to you all payments received from you, including the costs of delivery (with the exception of the supplementary costs resulting from your choice of a type of delivery other than the least expensive type of standard delivery offered by us), without undue delay and in any event not later than 14 days from the day on which we are informed about your decision to withdraw from this contract.
                         </p>
-
-                        <h2 className="text-xl font-semibold">4. How to Request a Refund</h2>
                         <p>
-                            To request a refund, please contact our support team at support@zeeremind.com with your account details and the reason for your request. We will review your request and process it within 5-7 business days.
-                        </p>
-
-                        <h2 className="text-xl font-semibold">5. Changes to Refund Policy</h2>
-                        <p>
-                            We reserve the right to modify this Refund Policy at any time. Changes will be effective immediately upon posting to the website.
+                            We will carry out such reimbursement using the same means of payment as you used for the initial transaction, unless you have expressly agreed otherwise; in any event, you will not incur any fees as a result of such reimbursement.
                         </p>
                     </div>
                 </div>
