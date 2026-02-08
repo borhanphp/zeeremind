@@ -9,10 +9,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { InvoiceForm } from '@/components/InvoiceForm';
 
+
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { ProUpgradeCard } from '@/components/ProUpgradeCard';
+
 export default function NewInvoicePage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [createdInvoice, setCreatedInvoice] = useState<{ _id: string, clientName: string, paymentLink?: string } | null>(null);
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
     const handleSubmit = async (data: any) => {
         setLoading(true);
@@ -30,15 +35,20 @@ export default function NewInvoicePage() {
                 token
             });
 
-            // Controller returns { success: true, data: invoice }
             if (response.success && response.data) {
                 setCreatedInvoice(response.data);
+            } else if (response.code === 'LIMIT_REACHED') {
+                setShowUpgradeModal(true);
             } else {
                 router.push('/invoices');
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to create invoice', err);
-            // In real app, show toast error
+            // Check if error is due to invoice limit reached
+            const errorMessage = err.message?.toLowerCase() || '';
+            if (errorMessage.includes('limit') || errorMessage.includes('upgrade') || errorMessage.includes('free plan')) {
+                setShowUpgradeModal(true);
+            }
         } finally {
             setLoading(false);
         }
@@ -110,6 +120,12 @@ export default function NewInvoicePage() {
                     </CardContent>
                 </Card>
             </div>
+
+            <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+                <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden bg-transparent border-none shadow-none">
+                    <ProUpgradeCard onClose={() => setShowUpgradeModal(false)} />
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

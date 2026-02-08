@@ -24,7 +24,7 @@ export default function AuthenticatedLayout({
     if (!mounted) return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="flex-1 bg-gray-50 dark:bg-gray-900">
             <DashboardNav />
             {children}
         </div>

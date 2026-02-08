@@ -6,6 +6,7 @@ import { apiRequest } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardNav } from '@/components/DashboardNav';
 import { InvoiceForm } from '@/components/InvoiceForm';
+import { PageLoader } from '@/components/PageLoader';
 
 export default function EditInvoicePage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
@@ -77,7 +78,7 @@ export default function EditInvoicePage({ params }: { params: Promise<{ id: stri
         }
     };
 
-    if (loading) return <div className="p-8 text-center">Loading invoice details...</div>;
+    if (loading) return <PageLoader message="Loading invoice..." />;
 
     return (
         <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">

@@ -33,6 +33,10 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { ProUpgradeCard } from '@/components/ProUpgradeCard';
+import { useSubscription } from '@/hooks/useSubscription';
+import { PageLoader } from '@/components/PageLoader';
 
 export default function InvoicesPage() {
     const router = useRouter();
@@ -43,6 +47,16 @@ export default function InvoicesPage() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [sendingReminderId, setSendingReminderId] = useState<string | null>(null);
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setToken(localStorage.getItem('token'));
+        }
+    }, []);
+
+    const { isPro, invoicesRemaining } = useSubscription(token || undefined);
 
     useEffect(() => {
         const fetchInvoices = async () => {
@@ -140,7 +154,16 @@ export default function InvoicesPage() {
         }
     };
 
-    if (loading) return <div className="p-8">Loading invoices...</div>;
+    const handleCreateInvoice = () => {
+        // If user is on free plan and has reached the limit, show upgrade modal
+        if (!isPro && invoicesRemaining !== null && invoicesRemaining <= 0) {
+            setShowUpgradeModal(true);
+        } else {
+            router.push('/invoices/new');
+        }
+    };
+
+    if (loading) return <PageLoader variant="skeleton" message="Loading invoices..." />;
 
     return (
         <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
@@ -148,9 +171,7 @@ export default function InvoicesPage() {
                 <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                     <h1 className="text-3xl font-bold">Invoices</h1>
                     <div className="flex items-center gap-4 w-full md:w-auto">
-                        <Link href="/invoices/new">
-                            <Button>Create New Invoice</Button>
-                        </Link>
+                        <Button onClick={handleCreateInvoice}>Create New Invoice</Button>
                     </div>
                 </div>
 
@@ -282,6 +303,13 @@ export default function InvoicesPage() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* Upgrade Modal */}
+            <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+                <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden bg-transparent border-none shadow-none">
+                    <ProUpgradeCard onClose={() => setShowUpgradeModal(false)} />
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

@@ -2,7 +2,7 @@ import { apiRequest } from './api';
 
 export interface SubscriptionStatus {
   plan: 'free' | 'pro';
-  status: 'active' | 'trial' | 'expired' | 'cancelled' | 'past_due';
+  status: 'active' | 'expired' | 'cancelled' | 'past_due'; // 'trial' removed - free users get 5 invoices lifetime
   features: {
     maxInvoices: number;
     emailReminders: boolean;
@@ -81,7 +81,7 @@ export const getPlans = async (): Promise<Plan[]> => {
 /**
  * Create checkout session for upgrade
  */
-export const createCheckout = async (token: string, plan: string): Promise<{ 
+export const createCheckout = async (token: string, plan: string): Promise<{
   priceId: string;
   customerEmail: string;
   customData: { userId: string; organizationId: string };
@@ -153,7 +153,7 @@ export const initPaddle = (vendorId?: string) => {
   const script = document.createElement('script');
   script.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
   script.async = true;
-  
+
   script.onload = () => {
     if (vendorId && (window as any).Paddle) {
       (window as any).Paddle.Initialize({

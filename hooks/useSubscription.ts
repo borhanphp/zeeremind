@@ -37,18 +37,17 @@ export const useSubscription = (token?: string) => {
   const isPro = subscription?.plan === 'pro';
   const isFree = subscription?.plan === 'free';
   const isActive = subscription?.status === 'active';
-  const isTrial = subscription?.status === 'trial';
   const isExpired = subscription?.status === 'expired';
   const isPastDue = subscription?.status === 'past_due';
 
-  const canUpgrade = isFree || isExpired || isTrial;
-  
+  const canUpgrade = isFree || isExpired;
+
   const hasFeature = (featureName: keyof SubscriptionStatus['features']) => {
     return subscription?.features[featureName] === true;
   };
 
   const invoicesRemaining = subscription?.usage?.remaining ?? 0;
-  const isApproachingLimit = !subscription?.usage?.unlimited && 
+  const isApproachingLimit = !subscription?.usage?.unlimited &&
     subscription?.usage?.used !== undefined &&
     subscription?.usage?.limit !== undefined &&
     subscription.usage.used >= (subscription.usage.limit * 0.8);
@@ -62,7 +61,6 @@ export const useSubscription = (token?: string) => {
     isPro,
     isFree,
     isActive,
-    isTrial,
     isExpired,
     isPastDue,
     canUpgrade,

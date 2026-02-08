@@ -5,11 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { 
-  CreditCard, 
-  Download, 
-  ExternalLink, 
-  Loader2, 
+import {
+  CreditCard,
+  Download,
+  ExternalLink,
+  Loader2,
   AlertCircle,
   Crown,
   Calendar,
@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useSubscription } from '@/hooks/useSubscription';
 import { getBillingHistory, cancelSubscription, getBillingPortalUrl } from '@/lib/subscription';
+import { PageLoader, InlineLoader } from '@/components/PageLoader';
 import Link from 'next/link';
 
 export default function BillingPage() {
@@ -97,11 +98,7 @@ export default function BillingPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-      </div>
-    );
+    return <PageLoader variant="card" message="Loading billing..." />;
   }
 
   return (
@@ -149,9 +146,8 @@ export default function BillingPage() {
                 <p className="text-sm text-muted-foreground">Status</p>
                 <Badge variant={
                   subscription?.status === 'active' ? 'default' :
-                  subscription?.status === 'trial' ? 'secondary' :
-                  subscription?.status === 'past_due' ? 'destructive' :
-                  'outline'
+                    subscription?.status === 'past_due' ? 'destructive' :
+                      'outline'
                 }>
                   {subscription?.status}
                 </Badge>
@@ -263,9 +259,7 @@ export default function BillingPage() {
           </CardHeader>
           <CardContent>
             {loadingTransactions ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-              </div>
+              <InlineLoader message="Loading transactions..." />
             ) : transactions.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <CreditCard className="h-12 w-12 mx-auto mb-3 opacity-50" />

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PageLoader } from '@/components/PageLoader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { apiRequest } from '@/lib/api';
 import SecuritySettings from '../settings/security/page';
@@ -30,7 +31,7 @@ export default function ProfilePage() {
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            const data = await apiRequest('/auth/me');
+            const data = await apiRequest('/auth/me', { token });
             if (data.success) {
                 setUser(data.data);
                 setName(data.data.name || '');
@@ -93,7 +94,7 @@ export default function ProfilePage() {
     };
 
     if (loading) {
-        return <div className="p-8">Loading profile...</div>;
+        return <PageLoader message="Loading profile..." />;
     }
 
     return (

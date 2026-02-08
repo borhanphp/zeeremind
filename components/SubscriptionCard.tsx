@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { AlertCircle, CheckCircle2, Crown, TrendingUp, Calendar, CreditCard } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Crown, TrendingUp, CreditCard } from 'lucide-react';
 import { useSubscription } from '@/hooks/useSubscription';
 import { formatUsage } from '@/lib/subscription';
 import Link from 'next/link';
@@ -12,22 +12,21 @@ import { useEffect, useState } from 'react';
 
 export function SubscriptionCard() {
   const [token, setToken] = useState<string | null>(null);
-  
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setToken(localStorage.getItem('token'));
     }
   }, []);
 
-  const { 
-    subscription, 
-    loading, 
-    isPro, 
-    isTrial, 
-    isExpired, 
+  const {
+    subscription,
+    loading,
+    isPro,
+    isExpired,
     isPastDue,
     invoicesRemaining,
-    isApproachingLimit 
+    isApproachingLimit
   } = useSubscription(token || undefined);
 
   if (loading || !subscription) {
@@ -45,8 +44,8 @@ export function SubscriptionCard() {
     );
   }
 
-  const usagePercent = subscription.usage.unlimited 
-    ? 100 
+  const usagePercent = subscription.usage.unlimited
+    ? 100
     : (subscription.usage.used / subscription.usage.limit) * 100;
 
   return (
@@ -59,33 +58,16 @@ export function SubscriptionCard() {
               {isPro && <Crown className="h-4 w-4 text-yellow-500" />}
             </CardTitle>
             <CardDescription>
-              {isPro ? 'Pro Plan' : isTrial ? 'Free Trial' : 'Free Plan'}
+              {isPro ? 'Pro Plan' : 'Free Plan'}
             </CardDescription>
           </div>
-          <Badge variant={isPro ? 'default' : isTrial ? 'secondary' : 'outline'}>
+          <Badge variant={isPro ? 'default' : 'outline'}>
             {subscription.plan.toUpperCase()}
           </Badge>
         </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Trial Status */}
-        {isTrial && subscription.trial && (
-          <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-            <div className="flex items-start gap-2">
-              <Calendar className="h-4 w-4 text-blue-600 mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                  Trial ends in {subscription.trial.daysRemaining} days
-                </p>
-                <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                  {new Date(subscription.trial.endsAt).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Past Due Warning */}
         {isPastDue && (
           <div className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg p-3">
@@ -110,7 +92,7 @@ export function SubscriptionCard() {
               <AlertCircle className="h-4 w-4 text-orange-600 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-orange-900 dark:text-orange-100">
-                  Trial Expired
+                  Subscription Expired
                 </p>
                 <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
                   Upgrade to Pro for unlimited invoices
@@ -128,14 +110,14 @@ export function SubscriptionCard() {
               {formatUsage(subscription.usage)}
             </span>
           </div>
-          
+
           {!subscription.usage.unlimited && (
             <>
-              <Progress 
-                value={usagePercent} 
+              <Progress
+                value={usagePercent}
                 className={`h-2 ${isApproachingLimit ? 'bg-orange-100' : ''}`}
               />
-              
+
               {isApproachingLimit && (
                 <p className="text-xs text-orange-600 mt-2 flex items-center gap-1">
                   <TrendingUp className="h-3 w-3" />
@@ -167,13 +149,13 @@ export function SubscriptionCard() {
               <CreditCard className="h-4 w-4 text-muted-foreground" />
               <span className="text-muted-foreground">Next billing:</span>
               <span className="font-medium">
-                {subscription.billing.nextBilledAt 
+                {subscription.billing.nextBilledAt
                   ? new Date(subscription.billing.nextBilledAt).toLocaleDateString()
                   : 'N/A'
                 }
               </span>
             </div>
-            
+
             {subscription.billing.cancelAtPeriodEnd && (
               <p className="text-xs text-orange-600">
                 Subscription will cancel on {new Date(subscription.billing.currentPeriodEnd).toLocaleDateString()}

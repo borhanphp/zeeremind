@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { DashboardNav } from '@/components/DashboardNav';
+import { PageLoader } from '@/components/PageLoader';
 import { Loader2, ArrowLeft, Mail, Clock, Calendar, DollarSign, CheckCircle, ExternalLink, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
@@ -55,11 +56,7 @@ export default function InvoiceDetailsPage({ params }: { params: Promise<{ id: s
     };
 
     if (loading) {
-        return (
-            <div className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
-            </div>
-        );
+        return <PageLoader message="Loading invoice details..." />;
     }
 
     if (!invoice) {
