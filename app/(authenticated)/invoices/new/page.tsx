@@ -12,12 +12,15 @@ import { InvoiceForm } from '@/components/InvoiceForm';
 
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { ProUpgradeCard } from '@/components/ProUpgradeCard';
+import { useSubscription } from '@/hooks/useSubscription';
 
 export default function NewInvoicePage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [createdInvoice, setCreatedInvoice] = useState<{ _id: string, clientName: string, paymentLink?: string } | null>(null);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const { isPro } = useSubscription(token || undefined);
 
     const handleSubmit = async (data: any) => {
         setLoading(true);
@@ -116,6 +119,7 @@ export default function NewInvoicePage() {
                             isSubmitting={loading}
                             onCancel={() => router.push('/invoices')}
                             submitLabel="Create Invoice"
+                            isPro={isPro}
                         />
                     </CardContent>
                 </Card>

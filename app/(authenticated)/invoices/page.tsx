@@ -22,7 +22,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Pencil, Trash2, Bell, CheckCircle, Loader2, Eye } from 'lucide-react';
+import { Pencil, Trash2, Bell, CheckCircle, Loader2, Eye, Mail, Smartphone, MessageSquare } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -56,7 +56,7 @@ export default function InvoicesPage() {
         }
     }, []);
 
-    const { isPro, invoicesRemaining } = useSubscription(token || undefined);
+    const { isPro, invoicesRemaining, refresh: subscriptionRefresh } = useSubscription(token || undefined);
 
     useEffect(() => {
         const fetchInvoices = async () => {
@@ -123,6 +123,8 @@ export default function InvoicesPage() {
             });
             setInvoices(invoices.filter(inv => inv._id !== deleteId));
             setDeleteId(null);
+            // Refresh subscription to update invoicesRemaining count
+            subscriptionRefresh();
         } catch (err) {
             console.error('Failed to delete invoice', err);
         }
@@ -231,7 +233,22 @@ export default function InvoicesPage() {
                                             </span>
                                         </TableCell>
                                         <TableCell>{new Date(invoice.dueDate).toLocaleDateString()}</TableCell>
-                                        <TableCell>{invoice.remindersSent?.length || 0}</TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center gap-1.5">
+                                                <span>{invoice.remindersSent?.length || 0}</span>
+                                                <div className="flex gap-0.5">
+                                                    {(invoice.reminderChannels || ['email']).includes('email') && (
+                                                        <span title="Email"><Mail className="h-3.5 w-3.5 text-blue-500" /></span>
+                                                    )}
+                                                    {(invoice.reminderChannels || []).includes('sms') && (
+                                                        <span title="SMS"><Smartphone className="h-3.5 w-3.5 text-green-500" /></span>
+                                                    )}
+                                                    {(invoice.reminderChannels || []).includes('whatsapp') && (
+                                                        <span title="WhatsApp"><MessageSquare className="h-3.5 w-3.5 text-emerald-500" /></span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
                                                 {invoice.status !== 'paid' && (

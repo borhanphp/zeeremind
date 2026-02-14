@@ -7,6 +7,9 @@ export default function Footer() {
                 © {new Date().getFullYear()} ZeeRemind. All rights reserved.
             </p>
             <nav className="sm:ml-auto flex gap-4 sm:gap-6">
+                <Link className="text-xs hover:underline underline-offset-4" href="/contact">
+                    Contact
+                </Link>
                 <Link className="text-xs hover:underline underline-offset-4" href="/terms">
                     Terms of Service
                 </Link>

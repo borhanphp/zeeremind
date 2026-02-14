@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardNav } from '@/components/DashboardNav';
 import { InvoiceForm } from '@/components/InvoiceForm';
 import { PageLoader } from '@/components/PageLoader';
+import { useSubscription } from '@/hooks/useSubscription';
 
 export default function EditInvoicePage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
@@ -17,6 +18,8 @@ export default function EditInvoicePage({ params }: { params: Promise<{ id: stri
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [initialData, setInitialData] = useState<any>(null);
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const { isPro } = useSubscription(token || undefined);
 
     useEffect(() => {
         const fetchInvoice = async () => {
@@ -34,10 +37,12 @@ export default function EditInvoicePage({ params }: { params: Promise<{ id: stri
                     setInitialData({
                         clientName: invoice.clientName,
                         clientEmail: invoice.clientEmail,
+                        clientPhone: invoice.clientPhone || '',
                         amount: invoice.amount,
                         dueDate: invoice.dueDate ? new Date(invoice.dueDate).toISOString().split('T')[0] : '',
                         paymentLink: invoice.paymentLink || '',
-                        invoiceNumber: invoice.invoiceNumber || ''
+                        invoiceNumber: invoice.invoiceNumber || '',
+                        reminderChannels: invoice.reminderChannels || ['email']
                     });
                 } else {
                     alert('Invoice not found');
@@ -95,6 +100,7 @@ export default function EditInvoicePage({ params }: { params: Promise<{ id: stri
                             isSubmitting={saving}
                             onCancel={() => router.push('/invoices')}
                             submitLabel="Save Changes"
+                            isPro={isPro}
                         />
                     </CardContent>
                 </Card>
