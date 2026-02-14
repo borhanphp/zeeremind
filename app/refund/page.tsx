@@ -1,14 +1,12 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { LandingHeader } from "@/components/LandingHeader";
+import { LandingFooter } from "@/components/LandingFooter";
 
 export default function RefundPolicy() {
     return (
         <div className="flex flex-col flex-1 bg-gray-50 dark:bg-gray-900">
-            <header className="px-4 lg:px-6 h-14 flex items-center border-b bg-white dark:bg-gray-800">
-                <Link className="flex items-center justify-center font-bold text-xl" href="/">
-                    ZeeRemind
-                </Link>
-            </header>
+            <LandingHeader />
             <main className="flex-1 container mx-auto px-4 py-8 md:py-12 max-w-4xl">
                 <Link href="/" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 mb-6">
                     <ArrowLeft className="mr-2 h-4 w-4" />
@@ -43,6 +41,7 @@ export default function RefundPolicy() {
                     </div>
                 </div>
             </main>
+            <LandingFooter />
         </div>
 
     );

@@ -1,14 +1,12 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { LandingHeader } from "@/components/LandingHeader";
+import { LandingFooter } from "@/components/LandingFooter";
 
 export default function TermsOfService() {
     return (
         <div className="flex flex-col flex-1 bg-gray-50 dark:bg-gray-900">
-            <header className="px-4 lg:px-6 h-14 flex items-center border-b bg-white dark:bg-gray-800">
-                <Link className="flex items-center justify-center font-bold text-xl" href="/">
-                    ZeeRemind
-                </Link>
-            </header>
+            <LandingHeader />
             <main className="flex-1 container mx-auto px-4 py-8 md:py-12 max-w-4xl">
                 <Link href="/" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 mb-6">
                     <ArrowLeft className="mr-2 h-4 w-4" />
@@ -36,7 +34,7 @@ export default function TermsOfService() {
 
                         <h2 className="text-xl font-semibold">4. Payments and Subscriptions</h2>
                         <p>
-                            Some parts of the Service are billed on a subscription basis ("Subscription(s)"). You will be billed in advance on a recurring and periodic basis ("Billing Cycle"). Billing cycles are set either on a monthly or annual basis, depending on the type of subscription plan you select when purchasing a Subscription.
+                            Some parts of the Service are billed on a subscription basis (&quot;Subscription(s)&quot;). You will be billed in advance on a recurring and periodic basis (&quot;Billing Cycle&quot;). Billing cycles are set either on a monthly or annual basis, depending on the type of subscription plan you select when purchasing a Subscription.
                         </p>
 
                         <h2 className="text-xl font-semibold">5. Termination</h2>
@@ -61,6 +59,7 @@ export default function TermsOfService() {
                     </div>
                 </div>
             </main>
+            <LandingFooter />
         </div>
 
     );

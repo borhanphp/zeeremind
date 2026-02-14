@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { AlertCircle, CheckCircle, Loader2, Mail, MapPin, Phone } from 'lucide-react';
+import { AlertCircle, CheckCircle, Loader2, Mail } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { LandingHeader } from '@/components/LandingHeader';
+import { LandingFooter } from '@/components/LandingFooter';
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -60,23 +62,7 @@ export default function ContactPage() {
 
     return (
         <div className="flex flex-col flex-1">
-            {/* Header - consistent with other public pages */}
-            <header className="px-4 lg:px-6 h-14 flex items-center border-b bg-white dark:bg-gray-950">
-                <Link className="flex items-center justify-center font-bold text-xl" href="/">
-                    ZeeRemind
-                </Link>
-                <nav className="ml-auto flex gap-4 sm:gap-6">
-                    <Link className="text-sm font-medium hover:underline underline-offset-4" href="/pricing">
-                        Pricing
-                    </Link>
-                    <Link className="text-sm font-medium hover:underline underline-offset-4" href="/login">
-                        Login
-                    </Link>
-                    <Link className="text-sm font-medium hover:underline underline-offset-4" href="/login?signup=true">
-                        Sign Up
-                    </Link>
-                </nav>
-            </header>
+            <LandingHeader />
 
             <main className="flex-1 bg-gray-50 dark:bg-gray-900 py-12 md:py-24">
                 <div className="container px-4 md:px-6 mx-auto max-w-5xl">
@@ -219,6 +205,8 @@ export default function ContactPage() {
                     </div>
                 </div>
             </main>
+
+            <LandingFooter />
         </div>
     );
 }
