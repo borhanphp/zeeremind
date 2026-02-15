@@ -30,7 +30,7 @@ export default function DashboardPage() {
         }
     }, []);
 
-    const { subscription, isPro, invoicesRemaining } = useSubscription(token || undefined);
+    const { subscription, isPro, invoicesRemaining, loading: subscriptionLoading } = useSubscription(token || undefined);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -54,6 +54,11 @@ export default function DashboardPage() {
     }, [router]);
 
     const handleCreateInvoice = () => {
+        // If subscription data hasn't loaded yet, navigate to form directly
+        if (subscriptionLoading) {
+            router.push('/invoices/new');
+            return;
+        }
         // If user is on free plan and has reached the limit, show upgrade modal
         if (!isPro && invoicesRemaining !== null && invoicesRemaining <= 0) {
             setShowUpgradeModal(true);
