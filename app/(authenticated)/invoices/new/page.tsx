@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiRequest } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -8,19 +8,31 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { InvoiceForm } from '@/components/InvoiceForm';
+import { PageLoader } from '@/components/PageLoader';
 
 
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { ProUpgradeCard } from '@/components/ProUpgradeCard';
 import { useSubscription } from '@/hooks/useSubscription';
+import { toast } from 'sonner';
 
 export default function NewInvoicePage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [createdInvoice, setCreatedInvoice] = useState<{ _id: string, clientName: string, paymentLink?: string } | null>(null);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    const { isPro } = useSubscription(token || undefined);
+    const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setToken(localStorage.getItem('token'));
+        }
+    }, []);
+
+    const { subscription, isPro, invoicesRemaining, loading: subscriptionLoading } = useSubscription(token || undefined);
+
+    // If limit reached, show upgrade modal immediately
+    const limitReached = !subscriptionLoading && subscription && !isPro && invoicesRemaining !== null && invoicesRemaining <= 0;
 
     const handleSubmit = async (data: any) => {
         setLoading(true);
@@ -47,10 +59,13 @@ export default function NewInvoicePage() {
             }
         } catch (err: any) {
             console.error('Failed to create invoice', err);
-            // Check if error is due to invoice limit reached
             const errorMessage = err.message?.toLowerCase() || '';
             if (errorMessage.includes('limit') || errorMessage.includes('upgrade') || errorMessage.includes('free plan')) {
                 setShowUpgradeModal(true);
+            } else if (errorMessage.includes('too many') || errorMessage.includes('rate') || errorMessage.includes('try again')) {
+                toast.error(err.message || 'Too many requests. Please try again later.');
+            } else {
+                toast.error(err.message || 'Failed to create invoice. Please try again.');
             }
         } finally {
             setLoading(false);
@@ -101,6 +116,24 @@ export default function NewInvoicePage() {
                             </div>
                         </CardContent>
                     </Card>
+                </div>
+            </div>
+        );
+    }
+
+    // Show loading while subscription data loads
+    if (subscriptionLoading || !subscription) {
+        return <PageLoader variant="skeleton" message="Loading..." />;
+    }
+
+    // If limit reached, show upgrade card instead of form
+    if (limitReached) {
+        return (
+            <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+                <div className="flex pt-16 w-full items-start justify-center">
+                    <div className="w-[450px]">
+                        <ProUpgradeCard onClose={() => router.push('/invoices')} />
+                    </div>
                 </div>
             </div>
         );

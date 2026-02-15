@@ -22,7 +22,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Pencil, Trash2, Bell, CheckCircle, Loader2, Eye, Mail, Smartphone, MessageSquare } from 'lucide-react';
+import { Pencil, Trash2, Bell, CheckCircle, Loader2, Eye, Mail, Smartphone, MessageSquare, X } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -45,8 +45,11 @@ export default function InvoicesPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [dueDateFilter, setDueDateFilter] = useState('all');
+    const [specificDate, setSpecificDate] = useState('');
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [sendingReminderId, setSendingReminderId] = useState<string | null>(null);
+    const [remindId, setRemindId] = useState<string | null>(null);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [token, setToken] = useState<string | null>(null);
 
@@ -56,7 +59,7 @@ export default function InvoicesPage() {
         }
     }, []);
 
-    const { isPro, invoicesRemaining, loading: subscriptionLoading, refresh: subscriptionRefresh } = useSubscription(token || undefined);
+    const { subscription, isPro, invoicesRemaining, loading: subscriptionLoading, refresh: subscriptionRefresh } = useSubscription(token || undefined);
 
     useEffect(() => {
         const fetchInvoices = async () => {
@@ -94,8 +97,40 @@ export default function InvoicesPage() {
             result = result.filter(inv => inv.status === statusFilter);
         }
 
+        if (specificDate) {
+            result = result.filter(inv => {
+                const due = new Date(inv.dueDate);
+                due.setHours(0, 0, 0, 0);
+                const pick = new Date(specificDate + 'T00:00:00');
+                return due.getTime() === pick.getTime();
+            });
+        } else if (dueDateFilter !== 'all') {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            result = result.filter(inv => {
+                const due = new Date(inv.dueDate);
+                due.setHours(0, 0, 0, 0);
+                switch (dueDateFilter) {
+                    case 'today':
+                        return due.getTime() === now.getTime();
+                    case 'this_week': {
+                        const endOfWeek = new Date(now);
+                        endOfWeek.setDate(now.getDate() + (7 - now.getDay()));
+                        return due >= now && due <= endOfWeek;
+                    }
+                    case 'this_month': {
+                        return due.getMonth() === now.getMonth() && due.getFullYear() === now.getFullYear() && due >= now;
+                    }
+                    case 'overdue':
+                        return due < now && inv.status !== 'paid';
+                    default:
+                        return true;
+                }
+            });
+        }
+
         setFilteredInvoices(result);
-    }, [invoices, searchQuery, statusFilter]);
+    }, [invoices, searchQuery, statusFilter, dueDateFilter, specificDate]);
 
     const handleMarkAsPaid = async (id: string) => {
         try {
@@ -157,11 +192,8 @@ export default function InvoicesPage() {
     };
 
     const handleCreateInvoice = () => {
-        // If subscription data hasn't loaded yet, navigate to form directly
-        if (subscriptionLoading) {
-            router.push('/invoices/new');
-            return;
-        }
+        // Don't proceed until subscription data is available
+        if (!subscription) return;
         // If user is on free plan and has reached the limit, show upgrade modal
         if (!isPro && invoicesRemaining !== null && invoicesRemaining <= 0) {
             setShowUpgradeModal(true);
@@ -169,6 +201,9 @@ export default function InvoicesPage() {
             router.push('/invoices/new');
         }
     };
+
+    // Button should be disabled until subscription data is loaded
+    const isCreateDisabled = subscriptionLoading || !subscription;
 
     if (loading) return <PageLoader variant="skeleton" message="Loading invoices..." />;
 
@@ -178,7 +213,7 @@ export default function InvoicesPage() {
                 <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                     <h1 className="text-3xl font-bold">Invoices</h1>
                     <div className="flex items-center gap-4 w-full md:w-auto">
-                        <Button onClick={handleCreateInvoice}>Create New Invoice</Button>
+                        <Button onClick={handleCreateInvoice} disabled={isCreateDisabled}>Create New Invoice</Button>
                     </div>
                 </div>
 
@@ -201,6 +236,36 @@ export default function InvoicesPage() {
                             <SelectItem value="overdue">Overdue</SelectItem>
                         </SelectContent>
                     </Select>
+                    <Select value={dueDateFilter} onValueChange={setDueDateFilter}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Filter by due date" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Dates</SelectItem>
+                            <SelectItem value="today">Due Today</SelectItem>
+                            <SelectItem value="this_week">Due This Week</SelectItem>
+                            <SelectItem value="this_month">Due This Month</SelectItem>
+                            <SelectItem value="overdue">Overdue</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Input
+                        type="date"
+                        value={specificDate}
+                        onChange={(e) => { setSpecificDate(e.target.value); setDueDateFilter('all'); }}
+                        className="w-[180px]"
+                        placeholder="Pick a date"
+                    />
+                    {(searchQuery || statusFilter !== 'all' || dueDateFilter !== 'all' || specificDate) && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => { setSearchQuery(''); setStatusFilter('all'); setDueDateFilter('all'); setSpecificDate(''); }}
+                            className="h-10 gap-1.5"
+                        >
+                            <X className="h-4 w-4" />
+                            Clear
+                        </Button>
+                    )}
                 </div>
 
                 <div className="border rounded-md bg-white dark:bg-gray-800">
@@ -270,7 +335,7 @@ export default function InvoicesPage() {
                                                             variant="ghost"
                                                             size="icon"
                                                             title="Send Reminder Now"
-                                                            onClick={() => handleSendReminder(invoice._id)}
+                                                            onClick={() => setRemindId(invoice._id)}
                                                             disabled={sendingReminderId === invoice._id}
                                                         >
                                                             {sendingReminderId === invoice._id ? (
@@ -321,6 +386,24 @@ export default function InvoicesPage() {
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
                             Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Send Reminder Confirmation */}
+            <AlertDialog open={!!remindId} onOpenChange={() => setRemindId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Send Reminder?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will send a reminder email to the client for this invoice. Are you sure you want to proceed?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => { if (remindId) { handleSendReminder(remindId); setRemindId(null); } }}>
+                            Send Reminder
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

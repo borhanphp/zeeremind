@@ -125,7 +125,7 @@ export function SubscriptionCard() {
                 </p>
               )}
 
-              {invoicesRemaining === 0 && (
+              {invoicesRemaining !== null && invoicesRemaining <= 0 && (
                 <p className="text-xs text-red-600 mt-2 flex items-center gap-1">
                   <AlertCircle className="h-3 w-3" />
                   Limit reached - Upgrade for unlimited

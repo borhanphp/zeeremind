@@ -54,11 +54,8 @@ export default function DashboardPage() {
     }, [router]);
 
     const handleCreateInvoice = () => {
-        // If subscription data hasn't loaded yet, navigate to form directly
-        if (subscriptionLoading) {
-            router.push('/invoices/new');
-            return;
-        }
+        // Don't proceed until subscription data is available
+        if (!subscription) return;
         // If user is on free plan and has reached the limit, show upgrade modal
         if (!isPro && invoicesRemaining !== null && invoicesRemaining <= 0) {
             setShowUpgradeModal(true);
@@ -66,6 +63,9 @@ export default function DashboardPage() {
             router.push('/invoices/new');
         }
     };
+
+    // Button should be disabled until subscription data is loaded
+    const isCreateDisabled = subscriptionLoading || !subscription;
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -76,6 +76,7 @@ export default function DashboardPage() {
                         <Button
                             className="bg-black hover:bg-gray-800 text-white"
                             onClick={handleCreateInvoice}
+                            disabled={isCreateDisabled}
                         >
                             Create New Invoice
                         </Button>
