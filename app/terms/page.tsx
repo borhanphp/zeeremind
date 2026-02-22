@@ -2,6 +2,13 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { LandingHeader } from "@/components/LandingHeader";
 import { LandingFooter } from "@/components/LandingFooter";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Terms of Service - ZeeRemind",
+    description:
+        "ZeeRemind Terms of Service. Read about the terms and conditions for using the ZeeRemind automated invoice reminder platform.",
+};
 
 export default function TermsOfService() {
     return (

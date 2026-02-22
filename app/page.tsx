@@ -15,6 +15,21 @@ import {
 } from "lucide-react";
 import { LandingHeader } from "@/components/LandingHeader";
 import { LandingFooter } from "@/components/LandingFooter";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "ZeeRemind - Automated Invoice Reminders | Get Paid Faster",
+  description:
+    "Stop chasing invoices. ZeeRemind sends automated payment reminders via Email, SMS & WhatsApp so you get paid on time. Free plan available.",
+  openGraph: {
+    title: "ZeeRemind - Automated Invoice Reminders",
+    description:
+      "Automated payment reminders via Email, SMS & WhatsApp. Set it once, get paid on time.",
+    url: "https://zeeremind.com",
+    siteName: "ZeeRemind",
+    type: "website",
+  },
+};
 
 export default function Home() {
   return (

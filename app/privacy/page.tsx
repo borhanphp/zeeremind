@@ -2,6 +2,13 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { LandingHeader } from "@/components/LandingHeader";
 import { LandingFooter } from "@/components/LandingFooter";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Privacy Policy - ZeeRemind",
+    description:
+        "ZeeRemind Privacy Policy. Learn how we collect, use, and protect your personal information when using our automated invoice reminder service.",
+};
 
 export default function PrivacyPolicy() {
     return (
