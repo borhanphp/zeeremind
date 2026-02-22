@@ -146,7 +146,13 @@ export default function PricingPage() {
                                         <Check className="h-4 w-4 text-green-500" /> Email Reminders
                                     </li>
                                     <li className="flex items-center gap-2">
+                                        <Check className="h-4 w-4 text-green-500" /> Automated Schedule
+                                    </li>
+                                    <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-green-500" /> Basic Reporting
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <Check className="h-4 w-4 text-green-500" /> Payment Link Tracking
                                     </li>
                                 </ul>
                             </CardContent>
@@ -182,13 +188,16 @@ export default function PricingPage() {
                                         <Check className="h-4 w-4 text-black" /> <strong>Unlimited</strong> Invoices
                                     </li>
                                     <li className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-black" /> Automated Schedule
+                                        <Check className="h-4 w-4 text-black" /> Everything in Free
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <Check className="h-4 w-4 text-black" /> SMS & WhatsApp Reminders
                                     </li>
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-black" /> Priority Support
                                     </li>
                                     <li className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-black" /> Remove "Powered by"
+                                        <Check className="h-4 w-4 text-black" /> Remove &quot;Powered by&quot;
                                     </li>
                                 </ul>
                             </CardContent>

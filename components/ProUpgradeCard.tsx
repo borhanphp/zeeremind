@@ -136,9 +136,10 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
                             <Check className="h-4 w-4 text-black" />
                             SMS & WhatsApp Reminders
                         </li>
+
                         <li className="flex items-center gap-2">
                             <Check className="h-4 w-4 text-black" />
-                            Automated Schedule
+                            Everything in Free
                         </li>
                         <li className="flex items-center gap-2">
                             <Check className="h-4 w-4 text-black" />

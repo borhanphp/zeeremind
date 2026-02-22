@@ -72,16 +72,13 @@ export default function PublicPricingPage() {
                                         <Check className="h-4 w-4 text-black dark:text-white" /> <strong>Unlimited</strong> Invoices
                                     </li>
                                     <li className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-black dark:text-white" /> Email Reminders
+                                        <Check className="h-4 w-4 text-black dark:text-white" /> Everything in Free
                                     </li>
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-black dark:text-white" /> SMS Reminders
                                     </li>
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-black dark:text-white" /> WhatsApp Reminders
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-black dark:text-white" /> Automated Schedule
                                     </li>
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-black dark:text-white" /> Priority Support
