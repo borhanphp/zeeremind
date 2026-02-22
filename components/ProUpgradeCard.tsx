@@ -145,10 +145,6 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
                             <Check className="h-4 w-4 text-black" />
                             Priority Support
                         </li>
-                        <li className="flex items-center gap-2">
-                            <Check className="h-4 w-4 text-black" />
-                            Remove "Powered by"
-                        </li>
                     </ul>
 
                     {/* Error Message */}

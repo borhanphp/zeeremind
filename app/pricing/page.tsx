@@ -83,9 +83,6 @@ export default function PublicPricingPage() {
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-black dark:text-white" /> Priority Support
                                     </li>
-                                    <li className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-black dark:text-white" /> Remove &quot;Powered by&quot;
-                                    </li>
                                 </ul>
                             </CardContent>
                             <CardFooter>
