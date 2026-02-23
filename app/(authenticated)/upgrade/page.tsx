@@ -26,6 +26,7 @@ export default function PricingPage() {
 
     const { subscription, loading: subLoading, isPro } = useSubscription(token || undefined);
     const [paddleLoaded, setPaddleLoaded] = useState(false);
+    const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
     const handleUpgrade = async () => {
         if (!token) {
@@ -38,7 +39,7 @@ export default function PricingPage() {
 
         try {
             // Get checkout data from backend (unified endpoint)
-            const response = await createCheckout(token, 'pro');
+            const response = await createCheckout(token, 'pro', billingCycle);
 
             if (response.type === 'redirect' && response.data.checkoutUrl) {
                 // Polar: redirect to checkout page
@@ -130,8 +131,27 @@ export default function PricingPage() {
                             Simple, Transparent Pricing
                         </h1>
                         <p className="text-lg text-muted-foreground">
-                            Always know what you'll pay. Upgrade for unlimited invoices.
+                            Always know what you&apos;ll pay. Upgrade for unlimited invoices.
                         </p>
+
+                        {/* Billing Cycle Toggle */}
+                        <div className="flex items-center justify-center gap-3 mt-6">
+                            <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-black dark:text-white' : 'text-muted-foreground'}`}>Monthly</span>
+                            <button
+                                onClick={() => setBillingCycle(prev => prev === 'monthly' ? 'annual' : 'monthly')}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${billingCycle === 'annual' ? 'bg-black dark:bg-white' : 'bg-gray-300'
+                                    }`}
+                            >
+                                <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-black transition-transform ${billingCycle === 'annual' ? 'translate-x-6' : 'translate-x-1'
+                                        }`}
+                                />
+                            </button>
+                            <span className={`text-sm font-medium ${billingCycle === 'annual' ? 'text-black dark:text-white' : 'text-muted-foreground'}`}>Annual</span>
+                            {billingCycle === 'annual' && (
+                                <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">Save 21%</Badge>
+                            )}
+                        </div>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -187,8 +207,17 @@ export default function PricingPage() {
                                 <CardDescription>For growing businesses needing more.</CardDescription>
                             </CardHeader>
                             <CardContent className="flex-1 space-y-4">
-                                <div className="text-4xl font-bold">$19<span className="text-base font-normal text-muted-foreground">/mo</span></div>
-                                <p className="text-sm text-muted-foreground mt-1">or $179/year (save 21%)</p>
+                                <div className="text-4xl font-bold">
+                                    {billingCycle === 'annual' ? '$179' : '$19'}
+                                    <span className="text-base font-normal text-muted-foreground">
+                                        {billingCycle === 'annual' ? '/year' : '/mo'}
+                                    </span>
+                                </div>
+                                {billingCycle === 'annual' ? (
+                                    <p className="text-sm text-green-600 font-medium">$14.92/mo — save $49/year</p>
+                                ) : (
+                                    <p className="text-sm text-muted-foreground">or $179/year (save 21%)</p>
+                                )}
                                 <ul className="space-y-2 text-sm">
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-black" /> <strong>Unlimited</strong> Invoices
