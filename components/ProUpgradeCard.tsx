@@ -123,7 +123,7 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
                 <CardContent className="space-y-6">
                     {/* Price */}
                     <div className="text-4xl font-bold">
-                        $9<span className="text-base font-normal text-muted-foreground">/mo</span>
+                        $19<span className="text-base font-normal text-muted-foreground">/mo</span>
                     </div>
 
                     {/* Features */}

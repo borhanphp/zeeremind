@@ -37,25 +37,30 @@ export default function PricingPage() {
         setError(null);
 
         try {
-            // Get checkout data from backend
+            // Get checkout data from backend (unified endpoint)
             const response = await createCheckout(token, 'pro');
 
-            // Initialize Paddle.js if not already loaded
+            if (response.type === 'redirect' && response.data.checkoutUrl) {
+                // Polar: redirect to checkout page
+                window.location.href = response.data.checkoutUrl;
+                return;
+            }
+
+            // Paddle: client-side checkout
             if (!(window as any).Paddle) {
                 setError('Payment system is loading. Please try again.');
                 setLoading(false);
                 return;
             }
 
-            // Open Paddle checkout
             (window as any).Paddle.Checkout.open({
                 items: [{
-                    priceId: response.priceId,
+                    priceId: response.data.priceId,
                     quantity: 1
                 }],
-                customData: response.customData,
+                customData: response.data.customData,
                 customer: {
-                    email: response.customerEmail
+                    email: response.data.customerEmail
                 },
                 settings: {
                     successUrl: `${window.location.origin}/dashboard?upgrade=success`,
@@ -140,7 +145,7 @@ export default function PricingPage() {
                                 <div className="text-4xl font-bold">$0<span className="text-base font-normal text-muted-foreground">/mo</span></div>
                                 <ul className="space-y-2 text-sm">
                                     <li className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-green-500" /> 5 Invoices per month
+                                        <Check className="h-4 w-4 text-green-500" /> 3 Invoices (lifetime)
                                     </li>
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-green-500" /> Email Reminders
@@ -182,7 +187,8 @@ export default function PricingPage() {
                                 <CardDescription>For growing businesses needing more.</CardDescription>
                             </CardHeader>
                             <CardContent className="flex-1 space-y-4">
-                                <div className="text-4xl font-bold">$9<span className="text-base font-normal text-muted-foreground">/mo</span></div>
+                                <div className="text-4xl font-bold">$19<span className="text-base font-normal text-muted-foreground">/mo</span></div>
+                                <p className="text-sm text-muted-foreground mt-1">or $179/year (save 21%)</p>
                                 <ul className="space-y-2 text-sm">
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-black" /> <strong>Unlimited</strong> Invoices

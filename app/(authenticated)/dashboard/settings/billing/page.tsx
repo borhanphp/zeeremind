@@ -175,7 +175,7 @@ export default function BillingPage() {
                     <DollarSign className="h-4 w-4" />
                     Price
                   </p>
-                  <p className="font-medium">$9.00 USD / month</p>
+                  <p className="font-medium">$19.00 USD / month</p>
                 </div>
               )}
             </div>
@@ -224,7 +224,7 @@ export default function BillingPage() {
                           <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
                           <AlertDialogDescription>
                             Your Pro subscription will remain active until the end of your current billing period.
-                            After that, you'll be downgraded to the Free plan (5 invoices per month).
+                            After that, you'll be downgraded to the Free plan (3 invoices per month).
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

@@ -2,7 +2,7 @@ import { apiRequest } from './api';
 
 export interface SubscriptionStatus {
   plan: 'free' | 'pro';
-  status: 'active' | 'expired' | 'cancelled' | 'past_due'; // 'trial' removed - free users get 5 invoices lifetime
+  status: 'active' | 'expired' | 'cancelled' | 'past_due'; // 'trial' removed - free users get 3 invoices lifetime
   features: {
     maxInvoices: number;
     emailReminders: boolean;
@@ -83,26 +83,34 @@ export const getPlans = async (): Promise<Plan[]> => {
 };
 
 /**
- * Create checkout session for upgrade
+ * Create checkout session for upgrade (works with any active processor)
  */
-export const createCheckout = async (token: string, plan: string): Promise<{
-  priceId: string;
-  customerEmail: string;
-  customData: { userId: string; organizationId: string };
+export const createCheckout = async (token: string, plan: string, billingCycle?: string): Promise<{
+  type: 'client' | 'redirect';
+  processor: 'paddle' | 'polar';
+  data: {
+    // Paddle fields
+    priceId?: string;
+    customerEmail?: string;
+    customData?: { userId: string; organizationId: string };
+    // Polar fields
+    checkoutUrl?: string;
+    checkoutId?: string;
+  };
 }> => {
-  const response = await apiRequest('/paddle/checkout', {
+  const response = await apiRequest('/payment/checkout', {
     method: 'POST',
     token,
-    body: { plan },
+    body: { plan, billingCycle: billingCycle || 'monthly' },
   });
   return response.data;
 };
 
 /**
- * Cancel subscription
+ * Cancel subscription (via active processor)
  */
 export const cancelSubscription = async (token: string): Promise<void> => {
-  await apiRequest('/paddle/cancel', {
+  await apiRequest('/payment/cancel', {
     method: 'POST',
     token,
   });
@@ -139,10 +147,10 @@ export const checkFeature = async (token: string, featureName: string): Promise<
 };
 
 /**
- * Get billing portal URL
+ * Get billing portal URL (via active processor)
  */
 export const getBillingPortalUrl = async (token: string): Promise<string> => {
-  const response = await apiRequest('/paddle/portal-url', {
+  const response = await apiRequest('/payment/portal-url', {
     token,
   });
   return response.data.portalUrl;

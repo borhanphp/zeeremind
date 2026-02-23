@@ -34,7 +34,7 @@ export default function PublicPricingPage() {
                                 </div>
                                 <ul className="space-y-2 text-sm">
                                     <li className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-green-500" /> 5 Invoices per month
+                                        <Check className="h-4 w-4 text-green-500" /> 3 Invoices (lifetime)
                                     </li>
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-green-500" /> Email Reminders
@@ -64,9 +64,10 @@ export default function PublicPricingPage() {
                                 <CardDescription>For growing businesses</CardDescription>
                             </CardHeader>
                             <CardContent className="flex-1">
-                                <div className="text-4xl font-bold mb-6">
-                                    $9<span className="text-base font-normal text-gray-400">/month</span>
+                                <div className="text-4xl font-bold mb-2">
+                                    $19<span className="text-base font-normal text-gray-400">/month</span>
                                 </div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">or $179/year (save 21%)</p>
                                 <ul className="space-y-2 text-sm">
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-black dark:text-white" /> <strong>Unlimited</strong> Invoices
@@ -105,9 +106,9 @@ export default function PublicPricingPage() {
                         </p>
                     </div>
                 </div>
-            </main>
+            </main >
 
             <LandingFooter />
-        </div>
+        </div >
     );
 }

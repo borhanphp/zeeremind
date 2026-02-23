@@ -86,7 +86,7 @@ export default function Home() {
               </div>
 
               <p className="text-sm text-gray-500">
-                Free plan includes 5 invoices/month · No credit card required
+                Free plan includes 3 invoices · No credit card required
               </p>
             </div>
           </div>
@@ -369,7 +369,7 @@ export default function Home() {
                 </div>
                 <ul className="space-y-3 text-sm mb-8 flex-1">
                   {[
-                    "5 invoices per month",
+                    "3 invoices (lifetime)",
                     "Email reminders",
                     "Automated schedule",
                     "Payment link tracking",
@@ -395,8 +395,9 @@ export default function Home() {
                 <h3 className="text-xl font-bold mb-1">Pro</h3>
                 <p className="text-sm text-gray-500 mb-5">For growing businesses</p>
                 <div className="text-4xl font-bold mb-6">
-                  $9<span className="text-base font-normal text-gray-400">/mo</span>
+                  $19<span className="text-base font-normal text-gray-400">/mo</span>
                 </div>
+                <p className="text-sm text-gray-500 mb-6">or $179/year (save 21%)</p>
                 <ul className="space-y-3 text-sm mb-8 flex-1">
                   {[
                     "Unlimited invoices",
