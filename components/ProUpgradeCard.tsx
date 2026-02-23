@@ -67,25 +67,30 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
         setError(null);
 
         try {
-            // Get checkout data from backend
+            // Get checkout data from backend (unified endpoint)
             const response = await createCheckout(token, 'pro');
 
-            // Initialize Paddle.js if not already loaded
+            if (response.type === 'redirect' && response.data.checkoutUrl) {
+                // Polar: redirect to checkout page
+                window.location.href = response.data.checkoutUrl;
+                return;
+            }
+
+            // Paddle: client-side checkout
             if (!(window as any).Paddle) {
                 setError('Payment system is loading. Please try again.');
                 setLoading(false);
                 return;
             }
 
-            // Open Paddle checkout
             (window as any).Paddle.Checkout.open({
                 items: [{
-                    priceId: response.priceId,
+                    priceId: response.data.priceId,
                     quantity: 1
                 }],
-                customData: response.customData,
+                customData: response.data.customData,
                 customer: {
-                    email: response.customerEmail
+                    email: response.data.customerEmail
                 },
                 settings: {
                     successUrl: `${window.location.origin}/dashboard?upgrade=success`,
