@@ -16,6 +16,7 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
     const [error, setError] = useState<string | null>(null);
     const [paddleLoaded, setPaddleLoaded] = useState(false);
     const [token, setToken] = useState<string | null>(null);
+    const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -68,7 +69,7 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
 
         try {
             // Get checkout data from backend (unified endpoint)
-            const response = await createCheckout(token, 'pro');
+            const response = await createCheckout(token, 'pro', billingCycle);
 
             if (response.type === 'redirect' && response.data.checkoutUrl) {
                 // Polar: redirect to checkout page
@@ -126,9 +127,39 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
                 </CardHeader>
 
                 <CardContent className="space-y-6">
+                    {/* Billing Toggle */}
+                    <div className="flex items-center justify-center gap-2 p-1 bg-gray-100 rounded-lg">
+                        <button
+                            onClick={() => setBillingCycle('monthly')}
+                            className={`flex-1 text-xs font-medium py-1.5 px-3 rounded-md transition-all ${billingCycle === 'monthly'
+                                    ? 'bg-white text-black shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Monthly
+                        </button>
+                        <button
+                            onClick={() => setBillingCycle('annual')}
+                            className={`flex-1 text-xs font-medium py-1.5 px-3 rounded-md transition-all ${billingCycle === 'annual'
+                                    ? 'bg-white text-black shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Annual <span className="text-green-600">-21%</span>
+                        </button>
+                    </div>
+
                     {/* Price */}
-                    <div className="text-4xl font-bold">
-                        $19<span className="text-base font-normal text-muted-foreground">/mo</span>
+                    <div>
+                        <div className="text-4xl font-bold">
+                            {billingCycle === 'annual' ? '$179' : '$19'}
+                            <span className="text-base font-normal text-muted-foreground">
+                                {billingCycle === 'annual' ? '/year' : '/mo'}
+                            </span>
+                        </div>
+                        {billingCycle === 'annual' && (
+                            <p className="text-xs text-green-600 font-medium mt-1">$14.92/mo — save $49/year</p>
+                        )}
                     </div>
 
                     {/* Features */}
