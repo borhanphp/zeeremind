@@ -7,19 +7,19 @@ export default function SettingsPage() {
         {
             title: "Profile",
             description: "Manage your personal information and preferences.",
-            href: "/dashboard/profile",
+            href: "/profile",
             icon: User,
         },
         {
             title: "Billing & Subscription",
             description: "Manage your subscription plan and payment methods.",
-            href: "/dashboard/settings/billing",
+            href: "/settings/billing",
             icon: CreditCard,
         },
         {
             title: "Security",
             description: "Update your password and security settings.",
-            href: "/dashboard/settings/security",
+            href: "/settings/security",
             icon: Shield,
         },
     ];

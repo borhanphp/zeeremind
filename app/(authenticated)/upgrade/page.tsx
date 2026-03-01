@@ -64,7 +64,7 @@ export default function PricingPage() {
                     email: response.data.customerEmail
                 },
                 settings: {
-                    successUrl: `${window.location.origin}/dashboard?upgrade=success`,
+                    successUrl: `${window.location.origin}/invoices?upgrade=success`,
                     allowLogout: false
                 }
             });
@@ -103,7 +103,7 @@ export default function PricingPage() {
                                 eventCallback: (event: any) => {
                                     console.log('[Paddle] Event:', event);
                                     if (event.name === 'checkout.completed') {
-                                        window.location.href = '/dashboard?upgrade=success';
+                                        window.location.href = '/invoices?upgrade=success';
                                     }
                                 }
                             });

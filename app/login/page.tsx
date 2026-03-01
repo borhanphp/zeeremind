@@ -53,7 +53,7 @@ function LoginContent() {
 
             if (data.token) {
                 localStorage.setItem('token', data.token);
-                router.push('/dashboard');
+                router.push('/invoices');
             } else if (data.success && !isLogin) {
                 // Registration successful — show verification needed
                 setShowRegistrationSuccess(true);

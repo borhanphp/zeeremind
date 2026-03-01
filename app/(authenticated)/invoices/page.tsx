@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { apiRequest } from '@/lib/api';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Table,
     TableBody,
@@ -35,6 +36,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { ProUpgradeCard } from '@/components/ProUpgradeCard';
+import { SubscriptionCard } from '@/components/SubscriptionCard';
 import { useSubscription } from '@/hooks/useSubscription';
 import { PageLoader } from '@/components/PageLoader';
 
@@ -52,6 +54,11 @@ export default function InvoicesPage() {
     const [remindId, setRemindId] = useState<string | null>(null);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [token, setToken] = useState<string | null>(null);
+    const [stats, setStats] = useState({
+        totalUnpaid: 0,
+        overdueAmount: 0,
+        paidThisMonth: 0,
+    });
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -62,7 +69,7 @@ export default function InvoicesPage() {
     const { subscription, isPro, invoicesRemaining, loading: subscriptionLoading, refresh: subscriptionRefresh } = useSubscription(token || undefined);
 
     useEffect(() => {
-        const fetchInvoices = async () => {
+        const fetchData = async () => {
             try {
                 const token = localStorage.getItem('token') || undefined;
                 if (!token) {
@@ -70,17 +77,21 @@ export default function InvoicesPage() {
                     return;
                 }
 
-                const data = await apiRequest('/invoice-reminder/invoices', { token });
-                setInvoices(data.data);
-                setFilteredInvoices(data.data);
+                const [invoicesData, statsData] = await Promise.all([
+                    apiRequest('/invoice-reminder/invoices', { token }),
+                    apiRequest('/invoice-reminder/stats', { token }),
+                ]);
+                setInvoices(invoicesData.data);
+                setFilteredInvoices(invoicesData.data);
+                setStats(statsData.data);
             } catch (err) {
-                console.error('Failed to fetch invoices', err);
+                console.error('Failed to fetch data', err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchInvoices();
+        fetchData();
     }, [router]);
 
     useEffect(() => {
@@ -214,6 +225,63 @@ export default function InvoicesPage() {
                     <h1 className="text-3xl font-bold">Invoices</h1>
                     <div className="flex items-center gap-4 w-full md:w-auto">
                         <Button onClick={handleCreateInvoice} disabled={isCreateDisabled}>Create New Invoice</Button>
+                    </div>
+                </div>
+
+                {/* Stats Overview */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    {/* Subscription Card */}
+                    <div className="lg:col-span-1">
+                        <SubscriptionCard />
+                    </div>
+
+                    {/* Stats Cards */}
+                    <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-5">
+                        <Card>
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-medium text-gray-500">
+                                    Total Unpaid Invoices
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stats.totalUnpaid}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    Active invoices pending payment
+                                </p>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-medium text-gray-500">
+                                    Overdue Amount
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold text-red-600">
+                                    ${stats.overdueAmount.toLocaleString()}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    Total value of overdue invoices
+                                </p>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-medium text-gray-500">
+                                    Paid This Month
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold text-green-600">
+                                    {stats.paidThisMonth}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    Invoices paid in the current month
+                                </p>
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
 

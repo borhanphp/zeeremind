@@ -165,7 +165,7 @@ export function SubscriptionCard() {
         )}
 
         {/* Upgrade Recommendation */}
-        {subscription.upgradeRecommended && !isPro && (
+        {/* {subscription.upgradeRecommended && !isPro && (
           <div className="bg-indigo-50 dark:bg-indigo-950 border border-indigo-200 dark:border-indigo-800 rounded-lg p-3">
             <p className="text-sm font-medium text-indigo-900 dark:text-indigo-100 mb-1">
               Consider upgrading
@@ -174,7 +174,7 @@ export function SubscriptionCard() {
               You're using your free plan heavily. Pro gives you unlimited invoices.
             </p>
           </div>
-        )}
+        )} */}
       </CardContent>
 
       <CardFooter>
@@ -186,7 +186,7 @@ export function SubscriptionCard() {
             </Button>
           </Link>
         ) : (
-          <Link href="/dashboard/settings/billing" className="w-full">
+          <Link href="/settings/billing" className="w-full">
             <Button variant="outline" className="w-full">
               Manage Subscription
             </Button>

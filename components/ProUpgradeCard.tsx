@@ -45,7 +45,7 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
                     eventCallback: (event: any) => {
                         console.log('[Paddle] Event:', event);
                         if (event.name === 'checkout.completed') {
-                            window.location.href = '/dashboard?upgrade=success';
+                            window.location.href = '/invoices?upgrade=success';
                         }
                     }
                 });
@@ -94,7 +94,7 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
                     email: response.data.customerEmail
                 },
                 settings: {
-                    successUrl: `${window.location.origin}/dashboard?upgrade=success`,
+                    successUrl: `${window.location.origin}/invoices?upgrade=success`,
                     allowLogout: false
                 }
             });
@@ -132,8 +132,8 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
                         <button
                             onClick={() => setBillingCycle('monthly')}
                             className={`flex-1 text-xs font-medium py-1.5 px-3 rounded-md transition-all ${billingCycle === 'monthly'
-                                    ? 'bg-white text-black shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-white text-black shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             Monthly
@@ -141,8 +141,8 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
                         <button
                             onClick={() => setBillingCycle('annual')}
                             className={`flex-1 text-xs font-medium py-1.5 px-3 rounded-md transition-all ${billingCycle === 'annual'
-                                    ? 'bg-white text-black shadow-sm'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-white text-black shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             Annual <span className="text-green-600">-21%</span>

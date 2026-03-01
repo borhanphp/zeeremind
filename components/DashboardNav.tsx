@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Menu, X, LayoutDashboard, FileText, Settings, LogOut } from 'lucide-react';
+import { Menu, X, FileText, Settings, LogOut } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export function DashboardNav() {
@@ -32,13 +32,12 @@ export function DashboardNav() {
     };
 
     const navLinks = [
-        { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/invoices', label: 'Invoices', icon: FileText },
-        { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+        { href: '/settings', label: 'Settings', icon: Settings },
     ];
 
     const isActive = (href: string) => {
-        if (href === '/dashboard') return pathname === '/dashboard';
+        if (href === '/invoices') return pathname === '/invoices';
         return pathname.startsWith(href);
     };
 
@@ -46,7 +45,7 @@ export function DashboardNav() {
         <>
             <header className="border-b bg-white dark:bg-gray-950 sticky top-0 z-50">
                 <div className="flex h-16 items-center px-4 max-w-7xl mx-auto">
-                    <Link href="/dashboard" className="font-bold text-xl">
+                    <Link href="/invoices" className="font-bold text-xl">
                         <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Zee</span>Remind
                     </Link>
 
@@ -59,8 +58,8 @@ export function DashboardNav() {
                                     key={link.href}
                                     href={link.href}
                                     className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive(link.href)
-                                            ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-800'
+                                        ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-800'
                                         }`}
                                 >
                                     <Icon className="h-4 w-4" />
@@ -108,8 +107,8 @@ export function DashboardNav() {
                                         key={link.href}
                                         href={link.href}
                                         className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${isActive(link.href)
-                                                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                                                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+                                            ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
                                             }`}
                                         onClick={() => setIsMenuOpen(false)}
                                     >
