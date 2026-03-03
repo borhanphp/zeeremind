@@ -98,9 +98,12 @@ export default function PricingPage() {
                         }
 
                         try {
+                            // Only set sandbox environment explicitly; production is default
+                            if (process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'sandbox') {
+                                (window as any).Paddle.Environment.set('sandbox');
+                            }
                             (window as any).Paddle.Initialize({
                                 token: clientToken,
-                                environment: 'sandbox',
                                 eventCallback: (event: any) => {
                                     console.log('[Paddle] Event:', event);
                                     if (event.name === 'checkout.completed') {
