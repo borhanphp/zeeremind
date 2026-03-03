@@ -121,7 +121,7 @@ export function SubscriptionCard() {
               {isApproachingLimit && (
                 <p className="text-xs text-orange-600 mt-2 flex items-center gap-1">
                   <TrendingUp className="h-3 w-3" />
-                  Approaching your monthly limit
+                  Approaching your invoice limit
                 </p>
               )}
 
