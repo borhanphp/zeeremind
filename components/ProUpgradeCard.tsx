@@ -14,15 +14,50 @@ interface ProUpgradeCardProps {
 export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [paddleInitializedEnv, setPaddleInitializedEnv] = useState<string | null>(null);
+    const [paddleLoaded, setPaddleLoaded] = useState(false);
     const [token, setToken] = useState<string | null>(null);
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
             setToken(localStorage.getItem('token'));
+
+            // Check if Paddle is already loaded
+            if ((window as any).Paddle) {
+                setPaddleLoaded(true);
+            }
         }
     }, []);
+
+    const initializePaddle = () => {
+        if ((window as any).Paddle && !paddleLoaded) {
+            const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+
+            if (!clientToken) {
+                console.error('[Paddle] Client token not configured');
+                setError('Payment system not configured');
+                return;
+            }
+
+            try {
+                (window as any).Paddle.Initialize({
+                    token: clientToken,
+                    environment: 'sandbox',
+                    eventCallback: (event: any) => {
+                        console.log('[Paddle] Event:', event);
+                        if (event.name === 'checkout.completed') {
+                            window.location.href = '/invoices?upgrade=success';
+                        }
+                    }
+                });
+                setPaddleLoaded(true);
+                console.log('[Paddle] Initialized successfully');
+            } catch (err) {
+                console.error('[Paddle] Initialization error:', err);
+                setError('Failed to initialize payment system');
+            }
+        }
+    };
 
     const handleUpgrade = async () => {
         if (!token) {
@@ -50,29 +85,6 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
                 return;
             }
 
-            // Initialize Paddle with environment from backend (only once)
-            const paddleEnv = response.data.environment || 'sandbox';
-            if (!paddleInitializedEnv) {
-                const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-                if (!clientToken) {
-                    setError('Payment system not configured. Please contact support.');
-                    setLoading(false);
-                    return;
-                }
-                (window as any).Paddle.Initialize({
-                    token: clientToken,
-                    environment: paddleEnv,
-                    eventCallback: (event: any) => {
-                        console.log('[Paddle] Event:', event);
-                        if (event.name === 'checkout.completed') {
-                            window.location.href = '/invoices?upgrade=success';
-                        }
-                    }
-                });
-                setPaddleInitializedEnv(paddleEnv);
-                console.log(`[Paddle] Initialized in ${paddleEnv} mode`);
-            }
-
             (window as any).Paddle.Checkout.open({
                 items: [{
                     priceId: response.data.priceId,
@@ -98,8 +110,11 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
 
     return (
         <>
-            {/* Load Paddle.js - initialization happens lazily in handleUpgrade */}
-            <Script src="https://cdn.paddle.com/paddle/v2/paddle.js" />
+            {/* Load Paddle.js */}
+            <Script
+                src="https://cdn.paddle.com/paddle/v2/paddle.js"
+                onLoad={initializePaddle}
+            />
 
             <Card className="w-full max-w-md border-2 shadow-xl relative overflow-hidden">
                 {/* Popular Badge */}

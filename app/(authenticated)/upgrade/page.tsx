@@ -25,7 +25,7 @@ export default function PricingPage() {
     }, []);
 
     const { subscription, loading: subLoading, isPro } = useSubscription(token || undefined);
-    const [paddleInitializedEnv, setPaddleInitializedEnv] = useState<string | null>(null);
+    const [paddleLoaded, setPaddleLoaded] = useState(false);
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
     const handleUpgrade = async () => {
@@ -52,29 +52,6 @@ export default function PricingPage() {
                 setError('Payment system is loading. Please try again.');
                 setLoading(false);
                 return;
-            }
-
-            // Initialize Paddle with environment from backend (only once)
-            const paddleEnv = response.data.environment || 'sandbox';
-            if (!paddleInitializedEnv) {
-                const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-                if (!clientToken) {
-                    setError('Payment system not configured. Please contact support.');
-                    setLoading(false);
-                    return;
-                }
-                (window as any).Paddle.Initialize({
-                    token: clientToken,
-                    environment: paddleEnv,
-                    eventCallback: (event: any) => {
-                        console.log('[Paddle] Event:', event);
-                        if (event.name === 'checkout.completed') {
-                            window.location.href = '/invoices?upgrade=success';
-                        }
-                    }
-                });
-                setPaddleInitializedEnv(paddleEnv);
-                console.log(`[Paddle] Initialized in ${paddleEnv} mode`);
             }
 
             (window as any).Paddle.Checkout.open({
@@ -106,8 +83,40 @@ export default function PricingPage() {
 
     return (
         <>
-            {/* Load Paddle.js - initialization happens lazily in handleUpgrade */}
-            <Script src="https://cdn.paddle.com/paddle/v2/paddle.js" />
+            {/* Load Paddle.js */}
+            <Script
+                src="https://cdn.paddle.com/paddle/v2/paddle.js"
+                onLoad={() => {
+                    if ((window as any).Paddle) {
+                        // Initialize Paddle with client-side token
+                        const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+
+                        if (!clientToken) {
+                            console.error('[Paddle] Client token not configured');
+                            setError('Payment system not configured. Please contact support.');
+                            return;
+                        }
+
+                        try {
+                            (window as any).Paddle.Initialize({
+                                token: clientToken,
+                                environment: 'sandbox',
+                                eventCallback: (event: any) => {
+                                    console.log('[Paddle] Event:', event);
+                                    if (event.name === 'checkout.completed') {
+                                        window.location.href = '/invoices?upgrade=success';
+                                    }
+                                }
+                            });
+                            setPaddleLoaded(true);
+                            console.log('[Paddle] Initialized successfully in sandbox mode');
+                        } catch (err) {
+                            console.error('[Paddle] Initialization error:', err);
+                            setError('Failed to initialize payment system');
+                        }
+                    }
+                }}
+            />
             <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
                 <div className="max-w-5xl mx-auto pt-16 px-4 pb-12">
                     {/* Error Alert */}
