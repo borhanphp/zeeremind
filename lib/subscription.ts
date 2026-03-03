@@ -96,6 +96,8 @@ export const createCheckout = async (token: string, plan: string, billingCycle?:
     // Polar fields
     checkoutUrl?: string;
     checkoutId?: string;
+    // Environment
+    environment?: string;
   };
 }> => {
   const response = await apiRequest('/payment/checkout', {
