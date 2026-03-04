@@ -104,10 +104,29 @@ export default function PricingPage() {
                             }
                             (window as any).Paddle.Initialize({
                                 token: clientToken,
-                                eventCallback: (event: any) => {
+                                eventCallback: async (event: any) => {
                                     console.log('[Paddle] Event:', event);
                                     if (event.name === 'checkout.completed') {
-                                        window.location.href = '/invoices?upgrade=success';
+                                        const txId = event.data?.transaction_id;
+                                        if (txId) {
+                                            try {
+                                                const token = localStorage.getItem('token');
+                                                if (token) {
+                                                    const { verifyCheckout } = await import('@/lib/subscription');
+                                                    await verifyCheckout(token, txId);
+                                                    console.log('[Paddle] Checkout verified successfully');
+                                                    window.location.href = '/invoices?upgrade=success';
+                                                } else {
+                                                    window.location.href = '/invoices?upgrade=success';
+                                                }
+                                            } catch (err: any) {
+                                                console.error('[Paddle] Failed to verify checkout:', err);
+                                                alert('Failed to instantly verify payment. Please wait a moment for the system to process it. Error: ' + (err.message || 'Unknown'));
+                                                window.location.href = '/invoices';
+                                            }
+                                        } else {
+                                            window.location.href = '/invoices?upgrade=success';
+                                        }
                                     }
                                 }
                             });
