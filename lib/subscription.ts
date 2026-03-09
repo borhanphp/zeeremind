@@ -110,7 +110,7 @@ export const createCheckout = async (token: string, plan: string, billingCycle?:
  * Verify a completed checkout transaction immediately (client-side)
  */
 export const verifyCheckout = async (token: string, transactionId: string): Promise<void> => {
-  await apiRequest('/payment/verify-checkout', {
+  await apiRequest('/paddle/verify-checkout', {
     method: 'POST',
     token,
     body: { transactionId },
