@@ -120,7 +120,12 @@ export default function PricingPage() {
                                                     window.location.href = '/invoices?upgrade=success';
                                                 }
                                             } catch (err: any) {
-                                                console.error('[Paddle] Failed to verify checkout:', err);
+                                                console.error('[Paddle] Failed to verify checkout details:', {
+                                                    message: err.message,
+                                                    name: err.name,
+                                                    stack: err.stack,
+                                                    response: err.response
+                                                });
                                                 alert('Failed to instantly verify payment. Please wait a moment for the system to process it. Error: ' + (err.message || 'Unknown'));
                                                 window.location.href = '/invoices';
                                             }

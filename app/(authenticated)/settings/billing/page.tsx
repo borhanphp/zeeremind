@@ -49,6 +49,17 @@ export default function BillingPage() {
 
     const { subscription, loading, isPro, refresh } = useSubscription(token || undefined);
 
+    // Polar (and other redirect checkouts) land here with ?success=true — refetch subscription after payment
+    useEffect(() => {
+        if (typeof window === 'undefined' || !token) return;
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('success') === 'true') {
+            refresh();
+            setSuccess('Payment received. Your subscription is updating.');
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+    }, [token, refresh]);
+
     useEffect(() => {
         const fetchTransactions = async () => {
             if (!token) return;
