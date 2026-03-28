@@ -106,15 +106,42 @@ export const createCheckout = async (token: string, plan: string, billingCycle?:
   return response.data;
 };
 
+export type VerifyCheckoutResult = {
+  deferred?: boolean;
+};
+
 /**
- * Verify a completed checkout transaction immediately (client-side)
+ * Verify a completed checkout transaction immediately (client-side).
+ * `deferred: true` means Paddle returned 403 for the transaction API — poll subscription or wait for webhooks.
  */
-export const verifyCheckout = async (token: string, transactionId: string): Promise<void> => {
-  await apiRequest('/paddle/verify-checkout', {
+export const verifyCheckout = async (
+  token: string,
+  transactionId: string
+): Promise<VerifyCheckoutResult> => {
+  const response = await apiRequest('/paddle/verify-checkout', {
     method: 'POST',
     token,
     body: { transactionId },
   });
+  return { deferred: response.deferred === true };
+};
+
+/** Poll until subscription shows Pro (e.g. after deferred verify while webhooks catch up). */
+export const pollUntilPro = async (
+  token: string,
+  maxAttempts = 45,
+  intervalMs = 2000
+): Promise<boolean> => {
+  for (let i = 0; i < maxAttempts; i++) {
+    await new Promise((r) => setTimeout(r, intervalMs));
+    try {
+      const sub = await getSubscriptionStatus(token);
+      if (sub.plan === 'pro') return true;
+    } catch {
+      /* ignore */
+    }
+  }
+  return false;
 };
 
 /**

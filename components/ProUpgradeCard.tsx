@@ -55,8 +55,11 @@ export function ProUpgradeCard({ onClose }: ProUpgradeCardProps) {
                                 try {
                                     const token = localStorage.getItem('token');
                                     if (token) {
-                                        const { verifyCheckout } = await import('@/lib/subscription');
-                                        await verifyCheckout(token, txId);
+                                        const { verifyCheckout, pollUntilPro } = await import('@/lib/subscription');
+                                        const { deferred } = await verifyCheckout(token, txId);
+                                        if (deferred) {
+                                            await pollUntilPro(token);
+                                        }
                                         console.log('[Paddle] Checkout verified successfully');
                                         window.location.href = '/invoices?upgrade=success';
                                     } else {
