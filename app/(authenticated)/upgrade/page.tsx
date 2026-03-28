@@ -63,8 +63,8 @@ export default function PricingPage() {
                 customer: {
                     email: response.data.customerEmail
                 },
+                // Do not set successUrl: it navigates away immediately and can abort verifyCheckout before it finishes.
                 settings: {
-                    successUrl: `${window.location.origin}/invoices?upgrade=success`,
                     allowLogout: false
                 }
             });
@@ -107,7 +107,8 @@ export default function PricingPage() {
                                 eventCallback: async (event: any) => {
                                     console.log('[Paddle] Event:', event);
                                     if (event.name === 'checkout.completed') {
-                                        const txId = event.data?.transaction_id;
+                                        const txId =
+                                            event.data?.transaction_id ?? event.data?.transactionId;
                                         if (txId) {
                                             try {
                                                 const token = localStorage.getItem('token');

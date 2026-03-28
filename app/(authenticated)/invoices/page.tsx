@@ -69,6 +69,15 @@ export default function InvoicesPage() {
     const { subscription, isPro, invoicesRemaining, loading: subscriptionLoading, refresh: subscriptionRefresh } = useSubscription(token || undefined);
 
     useEffect(() => {
+        if (typeof window === 'undefined' || !token) return;
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('upgrade') === 'success') {
+            subscriptionRefresh();
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+    }, [token, subscriptionRefresh]);
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('token') || undefined;
