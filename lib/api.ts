@@ -48,16 +48,29 @@ export const apiRequest = async (endpoint: string, options: RequestOptions = {})
         try {
             const res = await fetch(`${API_URL}${endpoint}`, config);
 
-            // Handle 401 - redirect to login
+            const data = await res.json().catch(() => ({}));
+
+            // 401: only redirect when an existing session expired — not on login/register failures (avoids full page reload on /login)
             if (res.status === 401) {
-                if (typeof window !== 'undefined') {
+                const isAuthFailure =
+                    endpoint.startsWith('/auth/login') ||
+                    endpoint.startsWith('/auth/register') ||
+                    endpoint.startsWith('/auth/resend-verification') ||
+                    endpoint.startsWith('/auth/forgot-password') ||
+                    endpoint.startsWith('/auth/reset-password');
+
+                if (typeof window !== 'undefined' && !isAuthFailure) {
                     localStorage.removeItem('token');
                     window.location.href = '/login';
+                    throw new Error('Session expired. Please log in again.');
                 }
-                throw new Error('Session expired. Please log in again.');
-            }
 
-            const data = await res.json();
+                throw new Error(
+                    (data as { error?: string; message?: string }).error ||
+                        (data as { message?: string }).message ||
+                        'Authentication failed'
+                );
+            }
 
             if (!res.ok) {
                 throw new Error(data.error || data.message || 'API Request Failed');
