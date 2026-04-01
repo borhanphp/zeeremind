@@ -210,7 +210,7 @@ export default function BillingPage() {
                                 </Link>
                             ) : (
                                 <>
-                                    <Button
+                                    {/* <Button
                                         variant="outline"
                                         onClick={handleOpenPortal}
                                         disabled={loadingPortal}
@@ -221,7 +221,7 @@ export default function BillingPage() {
                                             <ExternalLink className="mr-2 h-4 w-4" />
                                         )}
                                         Billing Portal
-                                    </Button>
+                                    </Button> */}
 
                                     {!subscription?.billing?.cancelAtPeriodEnd && (
                                         <AlertDialog>
