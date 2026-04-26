@@ -6,8 +6,6 @@ export interface SubscriptionStatus {
   features: {
     maxInvoices: number;
     emailReminders: boolean;
-    smsReminders: boolean;
-    whatsappReminders: boolean;
     basicReporting: boolean;
     automatedSchedule: boolean;
     prioritySupport: boolean;
@@ -44,8 +42,6 @@ export interface Plan {
   features: {
     maxInvoices: number;
     emailReminders: boolean;
-    smsReminders: boolean;
-    whatsappReminders: boolean;
     basicReporting: boolean;
     automatedSchedule: boolean;
     prioritySupport: boolean;

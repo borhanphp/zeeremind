@@ -258,7 +258,7 @@ export default function PricingPage() {
                                         <Check className="h-4 w-4 text-black" /> Everything in Free
                                     </li>
                                     <li className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-black" /> SMS & WhatsApp Reminders
+                                        <Check className="h-4 w-4 text-black" /> Unlimited automated email reminders
                                     </li>
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-black" /> Priority Support

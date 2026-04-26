@@ -76,10 +76,7 @@ export default function PublicPricingPage() {
                                         <Check className="h-4 w-4 text-black dark:text-white" /> Everything in Free
                                     </li>
                                     <li className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-black dark:text-white" /> SMS Reminders
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <Check className="h-4 w-4 text-black dark:text-white" /> WhatsApp Reminders
+                                        <Check className="h-4 w-4 text-black dark:text-white" /> Unlimited automated email reminders
                                     </li>
                                     <li className="flex items-center gap-2">
                                         <Check className="h-4 w-4 text-black dark:text-white" /> Priority Support

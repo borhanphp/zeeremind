@@ -23,7 +23,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Pencil, Trash2, Bell, CheckCircle, Loader2, Eye, Mail, Smartphone, MessageSquare, X } from 'lucide-react';
+import { Pencil, Trash2, Bell, CheckCircle, Loader2, Eye, Mail, X } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -386,12 +386,6 @@ export default function InvoicesPage() {
                                                 <div className="flex gap-0.5">
                                                     {(invoice.reminderChannels || ['email']).includes('email') && (
                                                         <span title="Email"><Mail className="h-3.5 w-3.5 text-blue-500" /></span>
-                                                    )}
-                                                    {(invoice.reminderChannels || []).includes('sms') && (
-                                                        <span title="SMS"><Smartphone className="h-3.5 w-3.5 text-green-500" /></span>
-                                                    )}
-                                                    {(invoice.reminderChannels || []).includes('whatsapp') && (
-                                                        <span title="WhatsApp"><MessageSquare className="h-3.5 w-3.5 text-emerald-500" /></span>
                                                     )}
                                                 </div>
                                             </div>
