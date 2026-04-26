@@ -23,9 +23,10 @@ interface InvoiceFormProps {
     isSubmitting: boolean;
     onCancel: () => void;
     submitLabel: string;
+    isPro: boolean;
 }
 
-export function InvoiceForm({ initialData, onSubmit, isSubmitting, onCancel, submitLabel }: InvoiceFormProps) {
+export function InvoiceForm({ initialData, onSubmit, isSubmitting, onCancel, submitLabel, isPro }: InvoiceFormProps) {
     const [formData, setFormData] = useState<InvoiceFormData>(initialData || {
         clientName: '',
         clientEmail: '',
